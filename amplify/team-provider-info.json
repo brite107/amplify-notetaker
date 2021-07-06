@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplifynotetaker-dev-163724-authRole",
+      "UnauthRoleArn": "arn:aws:iam::581632546872:role/amplify-amplifynotetaker-dev-163724-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::581632546872:role/amplify-amplifynotetaker-dev-163724-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-amplifynotetaker-dev-163724-deployment",
+      "UnauthRoleName": "amplify-amplifynotetaker-dev-163724-unauthRole",
+      "StackName": "amplify-amplifynotetaker-dev-163724",
+      "StackId": "arn:aws:cloudformation:us-east-2:581632546872:stack/amplify-amplifynotetaker-dev-163724/5b753bd0-dea2-11eb-823c-0234fd8df5da",
+      "AmplifyAppId": "d26qloempbuwgb"
+    },
+    "categories": {
+      "auth": {
+        "amplifynotetaker4cccb1d9": {}
+      }
+    }
+  }
+}
