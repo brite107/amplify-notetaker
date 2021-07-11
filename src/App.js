@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AmplifyAuthenticator, AmplifyGreetings } from '@aws-amplify/ui-react';
 import {AuthState, onAuthUIStateChange} from "@aws-amplify/ui-components";
 import { API, graphqlOperation  } from 'aws-amplify';
-import { createNote, deleteNote } from './graphql/mutations';
+import { createNote, deleteNote, updateNote } from './graphql/mutations';
 import { listNotes } from './graphql/queries';
 
 const App = () => {
@@ -45,7 +45,7 @@ const App = () => {
     event.preventDefault();
     // check if we have an existing note, if so update it
     if (hasExistingNote()) {
-      console.log('update note');
+      handleUpdateNote();
     } else {
       const input = { note };
       const result = await API.graphql(graphqlOperation(createNote, { input }));
@@ -53,6 +53,21 @@ const App = () => {
       setNotes([newNote, ...notes]);
       setNote('');
     }
+  };
+
+  const handleUpdateNote = async () => {
+    const input = { id: noteId, note };
+    const result = await API.graphql(graphqlOperation(updateNote, { input }));
+    const updatedNote = result.data.updateNote;
+    const index = notes.findIndex(note => note.id === updatedNote.id);
+    const updatedNotes = [
+      ...notes.slice(0, index),
+      updatedNote,
+      ...notes.slice(index + 1)
+    ];
+    setNotes(updatedNotes);
+    setNote('');
+    setNoteId('');
   };
 
   const handleDeleteNote = async noteId => {
@@ -86,7 +101,7 @@ const App = () => {
           className="pa2 f4"
           type="submit"
         >
-          Add note
+          {noteId ? "Update Note" : "Add Note"}
         </button>
       </form>
       {/* Notes List */}
