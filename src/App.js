@@ -32,13 +32,27 @@ const App = () => {
     setNote(event.target.value);
   };
 
+  const hasExistingNote = () => {
+    if (noteId) {
+      // is the ID a valid ID?
+      const isNote = notes.findIndex(note => note.id === noteId) > -1;
+      return isNote;
+    }
+    return false;
+  }
+
   const handleAddNote = async event => {
     event.preventDefault();
-    const input = { note };
-    const result = await API.graphql(graphqlOperation(createNote, { input }));
-    const newNote = result.data.createNote;
-    setNotes([newNote, ...notes]);
-    setNote('');
+    // check if we have an existing note, if so update it
+    if (hasExistingNote()) {
+      console.log('update note');
+    } else {
+      const input = { note };
+      const result = await API.graphql(graphqlOperation(createNote, { input }));
+      const newNote = result.data.createNote;
+      setNotes([newNote, ...notes]);
+      setNote('');
+    }
   };
 
   const handleDeleteNote = async noteId => {
