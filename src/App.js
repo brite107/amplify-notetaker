@@ -1,26 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { API, graphqlOperation  } from 'aws-amplify';
-import { createNote } from './graphql/mutations'
+import { createNote } from './graphql/mutations';
+import { listNotes } from './graphql/queries';
 
 const App = () => {
-  const [state, setState] = useState({
-    note: "",
-    notes: []
-  });
+  const [note, setNote] = useState('');
+  const [notes, setNotes] = useState([]);
+  // const [noteState, setNoteState] = useState({
+  //   note: "",
+  //   notes: [],
+  // });
+
+  useEffect(() => {
+    const getNotes = async () => {
+      const result = await API.graphql(graphqlOperation(listNotes));
+      const savedNotes = result.data.listNotes.items;
+      setNotes(savedNotes);
+    }
+
+    getNotes();
+    
+  }, [])
 
   const handleChangeNote = event => {
-    console.log(event);
-    setState({note: event.target.value})
+    setNote(event.target.value);
   };
 
-  const handleAddNote = event => {
-    console.log(event);
-    const { note } = state;
+  const handleAddNote = async event => {
     event.preventDefault();
     const input = { note };
-    API.graphql(graphqlOperation(createNote, { input }));
-  }
+    const result = await API.graphql(graphqlOperation(createNote, { input }));
+    const newNote = result.data.createNote;
+    setNotes([newNote, ...notes]);
+    setNote('');
+  };
 
   return (
     <div className="flex flex-column items-center justify-center pa3 bg-washed-red">
@@ -31,7 +45,8 @@ const App = () => {
           type="text" 
           className="pa2 f4"
           placeholder="Write your note"
-          onChange={handleChangeNote} 
+          onChange={handleChangeNote}
+          value={note} 
         />
         <button 
           className="pa2 f4"
@@ -41,7 +56,7 @@ const App = () => {
       </form>
       {/* Notes List */}
       <div>
-        {state.notes && state.notes.map(item => (
+        {notes && notes.map(item => (
           <div key={item.id} className="flex items-center">
             <li className="list pa1 f3">
               {item.note}
