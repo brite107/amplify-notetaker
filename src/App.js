@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { AmplifyAuthenticator, AmplifyGreetings } from '@aws-amplify/ui-react';
+import {AuthState, onAuthUIStateChange} from "@aws-amplify/ui-components";
 import { API, graphqlOperation  } from 'aws-amplify';
 import { createNote, deleteNote } from './graphql/mutations';
 import { listNotes } from './graphql/queries';
@@ -7,10 +8,8 @@ import { listNotes } from './graphql/queries';
 const App = () => {
   const [note, setNote] = useState('');
   const [notes, setNotes] = useState([]);
-  // const [noteState, setNoteState] = useState({
-  //   note: "",
-  //   notes: [],
-  // });
+  const [authState, setAuthState] = useState();
+  const [user, setUser] = useState();
 
   useEffect(() => {
     const getNotes = async () => {
@@ -20,6 +19,11 @@ const App = () => {
     }
 
     getNotes();
+    
+    return onAuthUIStateChange((nextAuthState, authData) => {
+      setAuthState(nextAuthState);
+      setUser(authData);
+    });
     
   }, [])
 
@@ -44,7 +48,9 @@ const App = () => {
     setNotes(updatedNotes);
   };
 
-  return (
+  return authState === AuthState.SignedIn && user ? (
+  <div>
+    <AmplifyGreetings username={user.attributes.email}></AmplifyGreetings>
     <div className="flex flex-column items-center justify-center pa3 bg-washed-red">
       <h1 className="code f2-1">Amplify Notetaker</h1>
       {/* Note Form */}
@@ -74,9 +80,11 @@ const App = () => {
           </div>
         ))}
       </div>
-      <AmplifySignOut />
     </div>
+  </div>
+  ) : (
+    <AmplifyAuthenticator />    
   );
 }
 
-export default withAuthenticator(App);
+export default App;
