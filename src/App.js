@@ -7,6 +7,7 @@ import { listNotes } from './graphql/queries';
 
 const App = () => {
   const [note, setNote] = useState('');
+  const [noteId, setNoteId] = useState('');
   const [notes, setNotes] = useState([]);
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
@@ -48,6 +49,11 @@ const App = () => {
     setNotes(updatedNotes);
   };
 
+  const handleSetNote = ({ note, id }) => {
+    setNote(note);
+    setNoteId(id);
+  };
+
   return authState === AuthState.SignedIn && user ? (
   <div>
     <AmplifyGreetings username={user.attributes.email}></AmplifyGreetings>
@@ -73,7 +79,7 @@ const App = () => {
       <div>
         {notes && notes.map(item => (
           <div key={item.id} className="flex items-center">
-            <li className="list pa1 f3">
+            <li onClick={() => handleSetNote(item)} className="list pa1 f3">
               {item.note}
             </li>
             <button onClick={() => handleDeleteNote(item.id)} className="bg-transparent bn f4"><span>&times;</span></button>
