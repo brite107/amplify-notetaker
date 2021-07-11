@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { API, graphqlOperation  } from 'aws-amplify';
-import { createNote } from './graphql/mutations';
+import { createNote, deleteNote } from './graphql/mutations';
 import { listNotes } from './graphql/queries';
 
 const App = () => {
@@ -36,6 +36,14 @@ const App = () => {
     setNote('');
   };
 
+  const handleDeleteNote = async noteId => {
+    const input = { id: noteId };
+    const result = await API.graphql(graphqlOperation(deleteNote, { input }));
+    const deletedNoteId = result.data.deleteNote.id;
+    const updatedNotes = notes.filter(note => note.id !== deletedNoteId);
+    setNotes(updatedNotes);
+  };
+
   return (
     <div className="flex flex-column items-center justify-center pa3 bg-washed-red">
       <h1 className="code f2-1">Amplify Notetaker</h1>
@@ -50,7 +58,8 @@ const App = () => {
         />
         <button 
           className="pa2 f4"
-          type="submit">
+          type="submit"
+        >
           Add note
         </button>
       </form>
@@ -61,7 +70,7 @@ const App = () => {
             <li className="list pa1 f3">
               {item.note}
             </li>
-            <button className="bg-transparent bn f4"><span>&times;</span></button>
+            <button onClick={() => handleDeleteNote(item.id)} className="bg-transparent bn f4"><span>&times;</span></button>
           </div>
         ))}
       </div>
