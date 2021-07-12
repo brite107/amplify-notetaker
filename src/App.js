@@ -13,12 +13,6 @@ const App = () => {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    const getNotes = async () => {
-      const result = await API.graphql(graphqlOperation(listNotes));
-      const savedNotes = result.data.listNotes.items;
-      setNotes(savedNotes);
-    }
-
     getNotes();
     
     return onAuthUIStateChange((nextAuthState, authData) => {
@@ -26,7 +20,13 @@ const App = () => {
       setUser(authData);
     });
     
-  }, [])
+  }, []);
+
+  const getNotes = async () => {
+    const result = await API.graphql(graphqlOperation(listNotes));
+    const savedNotes = result.data.listNotes.items;
+    setNotes(savedNotes);
+  };
 
   const handleChangeNote = event => {
     setNote(event.target.value);
